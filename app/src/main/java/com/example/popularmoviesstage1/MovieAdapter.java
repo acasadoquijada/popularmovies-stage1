@@ -11,16 +11,18 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+
 public class MovieAdapter extends  RecyclerView.Adapter<MovieAdapter.MovieViewHolder>{
 
     private int mNumberOfItems;
     private GridItemClickListener gridItemClickListener;
-    private Movie mMovie;
+    private ArrayList<Movie> mMovies;
 
-    MovieAdapter(int numberOfItems, GridItemClickListener listener,Movie m){
+    MovieAdapter(int numberOfItems, GridItemClickListener listener,ArrayList<Movie> m){
         mNumberOfItems = numberOfItems;
         gridItemClickListener = listener;
-        mMovie = m;
+        mMovies = m;
     }
 
     @NonNull
@@ -29,16 +31,10 @@ public class MovieAdapter extends  RecyclerView.Adapter<MovieAdapter.MovieViewHo
         Context context = viewGroup.getContext();
         int layoutIdForListItem = R.layout.film_image;
         LayoutInflater inflater = LayoutInflater.from(context);
-        boolean shouldAttachToParentImmediately = false;
 
-        View view = inflater.inflate(layoutIdForListItem, viewGroup, shouldAttachToParentImmediately);
-        MovieViewHolder  viewHolder = new MovieViewHolder(view);
+        View view = inflater.inflate(layoutIdForListItem, viewGroup, false);
 
-        return viewHolder;
-    }
-
-    public void setMovie(Movie movie){
-        mMovie = movie;
+        return new MovieViewHolder(view);
     }
 
     public interface GridItemClickListener {
@@ -47,9 +43,7 @@ public class MovieAdapter extends  RecyclerView.Adapter<MovieAdapter.MovieViewHo
 
     @Override
     public void onBindViewHolder(@NonNull MovieViewHolder holder, int position) {
-
-        //holder.bind("TODO");
-        holder.bind(mMovie.getPoster_path());
+        holder.bind(mMovies.get(position).getPoster_path());
     }
 
     @Override
@@ -65,7 +59,7 @@ public class MovieAdapter extends  RecyclerView.Adapter<MovieAdapter.MovieViewHo
         MovieViewHolder(@NonNull View view) {
             super(view);
 
-            itemView = (ImageView) view.findViewById(R.id.image_iv);
+            itemView = view.findViewById(R.id.image_iv);
 
             itemView.setOnClickListener(this);
 
