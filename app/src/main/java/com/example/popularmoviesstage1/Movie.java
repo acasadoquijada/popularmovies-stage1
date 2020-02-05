@@ -45,7 +45,6 @@ public class Movie {
         this.video = video;
     }
 
-
     public int getId() {
         return id;
     }
@@ -131,6 +130,8 @@ public class Movie {
     }
 
     public void setPoster_path(String poster_path) {
-        this.poster_path = poster_path;
+        final String base_url = "https://image.tmdb.org/t/p/";
+        final String size = "w185";
+        this.poster_path =  base_url + size + poster_path;
     }
 }
