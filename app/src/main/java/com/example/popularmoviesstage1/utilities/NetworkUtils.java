@@ -21,6 +21,8 @@ public class NetworkUtils {
             "http://api.themoviedb.org/3/movie/";
 
     public static final String top_rated = "top_rated";
+    public static final String popular = "popular";
+
 
     private static final String KEY = ""; // Your key goes here!!
     private static final String api_key_sort = "api_key";

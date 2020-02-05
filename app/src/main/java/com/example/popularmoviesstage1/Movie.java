@@ -1,6 +1,9 @@
 package com.example.popularmoviesstage1;
 
-public class Movie {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class Movie implements Parcelable {
 
     private int popularity;
     private int vote_count;
@@ -20,6 +23,35 @@ public class Movie {
 
     public Movie() {
     }
+
+    protected Movie(Parcel in) {
+        popularity = in.readInt();
+        vote_count = in.readInt();
+        video = in.readByte() != 0;
+        poster_path = in.readString();
+        id = in.readInt();
+        adult = in.readByte() != 0;
+        backdrop_path = in.readString();
+        original_language = in.readString();
+        original_title = in.readString();
+        genre_ids = in.createIntArray();
+        title = in.readString();
+        vote_average = in.readDouble();
+        overview = in.readString();
+        release_date = in.readString();
+    }
+
+    public static final Creator<Movie> CREATOR = new Creator<Movie>() {
+        @Override
+        public Movie createFromParcel(Parcel in) {
+            return new Movie(in);
+        }
+
+        @Override
+        public Movie[] newArray(int size) {
+            return new Movie[size];
+        }
+    };
 
     public int getPopularity() {
         return popularity;
@@ -134,4 +166,29 @@ public class Movie {
         final String size = "w185";
         this.poster_path =  base_url + size + poster_path;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(popularity);
+        dest.writeInt(vote_count);
+//        dest.writeBoolean(video);
+        dest.writeString(poster_path);
+        dest.writeInt(id);
+  //      dest.writeBoolean(adult);
+        dest.writeString(backdrop_path);
+        dest.writeString(original_language);
+        dest.writeString(original_title);
+        dest.writeIntArray(genre_ids);
+        dest.writeString(title);
+        dest.writeDouble(vote_average);
+        dest.writeString(overview);
+        dest.writeString(release_date);
+    }
+
+
 }

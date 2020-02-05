@@ -4,9 +4,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.example.popularmoviesstage1.utilities.JsonMovieUtils;
@@ -22,7 +26,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Grid
     private RecyclerView mMovieGrid;
     private Toast mToast;
     private ArrayList<Movie> mMovies;
-    private int numberOfMovies;
+    private final int colums = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +36,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Grid
         mMovies = new ArrayList<>();
 
         new FetchWeatherTask().execute(NetworkUtils.top_rated);
+
+        mMovieGrid = findViewById(R.id.recyclerView);
+
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this,colums);
+
+        mMovieGrid.setLayoutManager(gridLayoutManager);
 
 
 /*        String imageUri = "https://i.imgur.com/tGbaZCY.jpg";
@@ -51,19 +61,33 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Grid
 
     }
 
-    /*
-    As the Movie adapter needs a list of Movies we need to make sure we have that information
-    BEFORE creating the adaptaer
-     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemThatWasClickedId = item.getItemId();
+
+        if (itemThatWasClickedId == R.id.sort_popularity){
+            new FetchWeatherTask().execute(NetworkUtils.popular);
+            return true;
+        }
+
+        if (itemThatWasClickedId == R.id.sort_rate){
+            new FetchWeatherTask().execute(NetworkUtils.top_rated);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
 
     private void initializeAdapter(){
-        mMovieGrid = findViewById(R.id.recyclerView);
 
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this,2);
-
-        mMovieGrid.setLayoutManager(gridLayoutManager);
-
-        mAdapter = new MovieAdapter(numberOfMovies,this, mMovies);
+        mAdapter = new MovieAdapter(mMovies.size(),this, mMovies);
 
         mMovieGrid.setAdapter(mAdapter);
 
@@ -77,10 +101,21 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Grid
         }
 
         // TODO CREATE INTENT PASSING THE MOVIE INFO
-        String toastMessage = mMovies.get(clickedItemIndex).getOriginal_title();
-        mToast = Toast.makeText(this, toastMessage, Toast.LENGTH_LONG);
 
-        mToast.show();
+        Intent intent = new Intent(MainActivity.this,DetailActivity.class);
+
+        Bundle bundle = new Bundle();
+
+        bundle.putParcelable("movie",mMovies.get(clickedItemIndex));
+
+        intent.putExtra("movie",bundle);
+
+        startActivity(intent);
+
+        //String toastMessage = mMovies.get(clickedItemIndex).getOriginal_title();
+        //mToast = Toast.makeText(this, toastMessage, Toast.LENGTH_LONG);
+
+        //mToast.show();
     }
 
     class FetchWeatherTask extends AsyncTask<String, Void, String> {
@@ -94,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Grid
 
             try {
 
-                URL url = NetworkUtils.buildUrl(NetworkUtils.top_rated);
+                URL url = NetworkUtils.buildUrl(strings[0]);
 
                 return NetworkUtils
                         .getResponseFromHttpUrl(url);
@@ -114,11 +149,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Grid
 
                 mMovies = JsonMovieUtils.parseMoviesJsonArray(jsonMovieResponse);
 
-                numberOfMovies = mMovies.size();
-
-                if (mAdapter == null){
+                if (mMovies != null && mMovies.size() > 0) {
                     initializeAdapter();
                 }
+
 
             }
         }
