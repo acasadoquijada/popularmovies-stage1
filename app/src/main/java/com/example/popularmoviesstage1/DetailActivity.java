@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -16,26 +15,63 @@ import com.squareup.picasso.Picasso;
 
 public class DetailActivity extends AppCompatActivity {
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        Intent intent = getIntent();
+        TextView textViewTitle;
+        TextView textViewOverview;
+        TextView textViewReleaseDate;
+        TextView textViewVoteAverage;
+        ImageView imageViewMoviePoster;
+        Intent intent;
+        Movie movie;
 
-        Bundle b = intent.getBundleExtra("movie");
+        /*
+        *
+        * To avoid Android E/Parcel﹕ Class not found when unmarshalling
+        * https://stackoverflow.com/questions/28589509/android-
+        * e-parcel-class-not-found-when-unmarshalling-only-on-samsung-tab3
+        *
+        */
 
-        Parcelable p = b.getParcelable("movie");
+        intent = getIntent();
 
-        Movie m = intent.getExtras().getBundle("movie").getParcelable("movie");
+        Bundle b = intent.getBundleExtra("bundle");
 
-        TextView textViewTitle = findViewById(R.id.title);
-        ImageView imageViewMoviePoster = findViewById(R.id.movie_poster);
+        if(b != null && b.getParcelable("movie") != null){
 
-        textViewTitle.setText(m.getOriginal_title());
+            movie = b.getParcelable("movie");
 
-        String imageUri = "https://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg";
+            if(movie != null){
+                // Movie poster
+                imageViewMoviePoster = findViewById(R.id.movie_poster);
+                Picasso.get().load(movie.getPoster_path()).into(imageViewMoviePoster);
 
-        Picasso.get().load(imageUri).into(imageViewMoviePoster);
+                // Movie original_title
+                textViewTitle = findViewById(R.id.title);
+                textViewTitle.setText(movie.getOriginal_title());
+
+                // Movie overview
+                textViewOverview = findViewById(R.id.overview);
+                textViewOverview.setText(movie.getOverview());
+
+                // Movie release date
+                String release_date_help_text = "Release date: ";
+                textViewReleaseDate = findViewById(R.id.release_date);
+                textViewReleaseDate.setText(release_date_help_text);
+                textViewReleaseDate.append(movie.getRelease_date());
+
+                // Movie vote average
+                String vote_average_help_text = "Vote average: ";
+                textViewVoteAverage = findViewById(R.id.vote_average);
+                textViewVoteAverage.setText(vote_average_help_text);
+                textViewVoteAverage.append(movie.getVote_average() + "/10");
+            }
+
+        }
+
     }
 }

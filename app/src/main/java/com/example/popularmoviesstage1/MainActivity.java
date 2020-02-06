@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -102,13 +101,13 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Grid
 
         // TODO CREATE INTENT PASSING THE MOVIE INFO
 
-        Intent intent = new Intent(MainActivity.this,DetailActivity.class);
 
         Bundle bundle = new Bundle();
+        bundle.putParcelable("movie", mMovies.get(clickedItemIndex));
 
-        bundle.putParcelable("movie",mMovies.get(clickedItemIndex));
+        Intent intent = new Intent(MainActivity.this,DetailActivity.class);
 
-        intent.putExtra("movie",bundle);
+        intent.putExtra("bundle",bundle);
 
         startActivity(intent);
 
@@ -151,6 +150,14 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Grid
 
                 if (mMovies != null && mMovies.size() > 0) {
                     initializeAdapter();
+
+
+              //      Intent intent = new Intent(MainActivity.this,DetailActivity.class);
+
+
+             //       intent.putExtra("movie",mMovies.get(1));
+
+                    //startActivity(intent);
                 }
 
 

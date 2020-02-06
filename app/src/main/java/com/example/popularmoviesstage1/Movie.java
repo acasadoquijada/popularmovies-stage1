@@ -27,10 +27,10 @@ public class Movie implements Parcelable {
     protected Movie(Parcel in) {
         popularity = in.readInt();
         vote_count = in.readInt();
-        video = in.readByte() != 0;
+        video = (Boolean) in.readValue(null);
         poster_path = in.readString();
         id = in.readInt();
-        adult = in.readByte() != 0;
+        adult = (Boolean) in.readValue(null);
         backdrop_path = in.readString();
         original_language = in.readString();
         original_title = in.readString();
@@ -49,7 +49,7 @@ public class Movie implements Parcelable {
 
         @Override
         public Movie[] newArray(int size) {
-            return new Movie[size];
+            return new Movie[0];
         }
     };
 
@@ -169,17 +169,17 @@ public class Movie implements Parcelable {
 
     @Override
     public int describeContents() {
-        return 0;
+        return hashCode();
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(popularity);
         dest.writeInt(vote_count);
-//        dest.writeBoolean(video);
+        dest.writeValue(video);
         dest.writeString(poster_path);
         dest.writeInt(id);
-  //      dest.writeBoolean(adult);
+        dest.writeValue(adult);
         dest.writeString(backdrop_path);
         dest.writeString(original_language);
         dest.writeString(original_title);
@@ -188,7 +188,6 @@ public class Movie implements Parcelable {
         dest.writeDouble(vote_average);
         dest.writeString(overview);
         dest.writeString(release_date);
+
     }
-
-
 }

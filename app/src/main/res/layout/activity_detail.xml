@@ -5,31 +5,58 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:textSize="40sp"
+            android:textColor="@color/white"
+            android:layout_gravity="start"
             android:layout_marginBottom="10sp"
-            android:background="#4148F5"/>
+            android:padding="10sp"
+            android:background="@color/colorAccent"/>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingLeft="20sp">
 
         <ImageView
             android:id="@+id/movie_poster"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:contentDescription="this_is_a_poster"
-            android:layout_gravity="start"/>
-
-        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:text="asdadsa"
-            android:background="#4148F5"/>
+            android:contentDescription="this_is_a_poster" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="20sp">
+
+
+        <TextView
+            android:id="@+id/release_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"/>
+
+        <TextView
+            android:id="@+id/vote_average"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+        <TextView
+            android:id="@+id/overview"
+            android:padding="20sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
 
     </LinearLayout>
