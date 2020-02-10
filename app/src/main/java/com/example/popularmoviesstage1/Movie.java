@@ -24,7 +24,7 @@ public class Movie implements Parcelable {
     public Movie() {
     }
 
-    protected Movie(Parcel in) {
+    private Movie(Parcel in) {
         popularity = in.readInt();
         vote_count = in.readInt();
         video = (Boolean) in.readValue(null);

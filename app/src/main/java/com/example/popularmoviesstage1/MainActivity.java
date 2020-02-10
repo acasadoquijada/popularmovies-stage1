@@ -20,43 +20,30 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements MovieAdapter.GridItemClickListener {
 
-
     private MovieAdapter mAdapter;
     private RecyclerView mMovieGrid;
-    private Toast mToast;
     private ArrayList<Movie> mMovies;
-    private final int colums = 2;
+
+    private String previousSortOption = "";
+    private String currentSortOption = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mMovies = new ArrayList<>();
+        previousSortOption = "";
+        currentSortOption = NetworkUtils.popular;
 
-        new FetchWeatherTask().execute(NetworkUtils.top_rated);
+        mMovies = new ArrayList<>();
 
         mMovieGrid = findViewById(R.id.recyclerView);
 
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this,colums);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
 
         mMovieGrid.setLayoutManager(gridLayoutManager);
 
-
-/*        String imageUri = "https://i.imgur.com/tGbaZCY.jpg";
-        ImageView ivBasicImage = (ImageView) findViewById(R.id.imageView);
-        Picasso.with(this).load(imageUri).into(ivBasicImage);*/
-
-//
-       // Intent intent = new Intent(MainActivity.this,DetailActivity.class);
-
-
-        /*
-         * Once the Intent has been created, we can use Activity's method, "startActivity"
-         * to start the ChildActivity.
-         */
-       // startActivity(intent);
-
+        new FetchMoviesTask().execute(currentSortOption);
 
     }
 
@@ -71,12 +58,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Grid
         int itemThatWasClickedId = item.getItemId();
 
         if (itemThatWasClickedId == R.id.sort_popularity){
-            new FetchWeatherTask().execute(NetworkUtils.popular);
+            new FetchMoviesTask().execute(NetworkUtils.popular);
             return true;
         }
 
         if (itemThatWasClickedId == R.id.sort_rate){
-            new FetchWeatherTask().execute(NetworkUtils.top_rated);
+            new FetchMoviesTask().execute(NetworkUtils.top_rated);
             return true;
         }
 
@@ -95,14 +82,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Grid
     @Override
     public void onGridItemClick(int clickedItemIndex) {
 
-        if (mToast != null) {
-            mToast.cancel();
-        }
-
-        // TODO CREATE INTENT PASSING THE MOVIE INFO
-
-
         Bundle bundle = new Bundle();
+
         bundle.putParcelable("movie", mMovies.get(clickedItemIndex));
 
         Intent intent = new Intent(MainActivity.this,DetailActivity.class);
@@ -111,56 +92,59 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Grid
 
         startActivity(intent);
 
-        //String toastMessage = mMovies.get(clickedItemIndex).getOriginal_title();
-        //mToast = Toast.makeText(this, toastMessage, Toast.LENGTH_LONG);
-
-        //mToast.show();
     }
 
-    class FetchWeatherTask extends AsyncTask<String, Void, String> {
+    class FetchMoviesTask extends AsyncTask<String, Void, ArrayList<Movie> >{
 
         @Override
-        protected String doInBackground(String... strings) {
+        protected ArrayList<Movie> doInBackground(String... strings) {
 
             if (strings.length == 0) {
                 return null;
             }
 
-            try {
+            if (!previousSortOption.equals(strings[0])) {
 
-                URL url = NetworkUtils.buildUrl(strings[0]);
+                try {
 
-                return NetworkUtils
-                        .getResponseFromHttpUrl(url);
+                    currentSortOption = strings[0];
 
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
+                    String jsonMovies;
+
+                    switch (strings[0]){
+                        case NetworkUtils.top_rated:
+                            jsonMovies = NetworkUtils.getTopRateMovies();
+                            break;
+                        case NetworkUtils.popular:
+                            jsonMovies = NetworkUtils.getPopularMovies();
+                            break;
+                        default:
+                            jsonMovies = "";
+                            break;
+                    }
+
+                    return JsonMovieUtils.parseMoviesJsonArray(jsonMovies);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return null;
+                }
+
             }
+
+            return mMovies;
         }
 
         @Override
-        protected void onPostExecute(String jsonMovieResponse) {
+        protected void onPostExecute(ArrayList<Movie> movies) {
 
-            if (jsonMovieResponse != null) {
+            if (movies != null) {
 
-                Log.d("MOVIES", jsonMovieResponse);
-
-                mMovies = JsonMovieUtils.parseMoviesJsonArray(jsonMovieResponse);
-
-                if (mMovies != null && mMovies.size() > 0) {
+                if(!currentSortOption.equals(previousSortOption)){
+                    mMovies = movies;
                     initializeAdapter();
-
-
-              //      Intent intent = new Intent(MainActivity.this,DetailActivity.class);
-
-
-             //       intent.putExtra("movie",mMovies.get(1));
-
-                    //startActivity(intent);
                 }
-
-
+                previousSortOption = currentSortOption;
             }
         }
     }

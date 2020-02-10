@@ -28,7 +28,7 @@ public class NetworkUtils {
     private static final String api_key_sort = "api_key";
 
 
-    public static URL buildUrl(String sort_option){
+    private static URL buildUrl(String sort_option){
         Uri builtUri = Uri.parse(BASE_URL).buildUpon()
                 .appendPath(sort_option)
                 .appendQueryParameter(api_key_sort,KEY)
@@ -45,6 +45,19 @@ public class NetworkUtils {
 
     }
 
+
+    public static String getTopRateMovies() throws IOException {
+        URL topRatedMoviesUrl = buildUrl(top_rated);
+        return getResponseFromHttpUrl(topRatedMoviesUrl);
+
+    }
+
+    public static String getPopularMovies() throws IOException {
+        URL topRatedMoviesUrl = buildUrl(popular);
+        return getResponseFromHttpUrl(topRatedMoviesUrl);
+
+    }
+
     /**
      * This method returns the entire result from the HTTP response.
      *
@@ -54,7 +67,7 @@ public class NetworkUtils {
      */
 
 
-    public static String getResponseFromHttpUrl(URL url) throws IOException {
+    private static String getResponseFromHttpUrl(URL url) throws IOException {
 
         Log.d("URL", url.toString());
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();

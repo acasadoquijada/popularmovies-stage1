@@ -23,9 +23,10 @@
     <!--COMPLETED (7) Set the title to the search string ("Search") from strings.xml-->
     <item
         android:id="@+id/action_search"
+        android:title=""
         android:orderInCategory="1"
         app:showAsAction="ifRoom"
-        android:title="Sort movies">
+        android:icon="@drawable/baseline_more_vert_white_18dp">
 
         <menu>
             <item

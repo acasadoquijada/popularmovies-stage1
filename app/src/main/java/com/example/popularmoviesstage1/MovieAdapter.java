@@ -15,8 +15,8 @@ import java.util.ArrayList;
 
 public class MovieAdapter extends  RecyclerView.Adapter<MovieAdapter.MovieViewHolder>{
 
-    private int mNumberOfItems;
-    private GridItemClickListener gridItemClickListener;
+    private final int mNumberOfItems;
+    private final GridItemClickListener gridItemClickListener;
     private ArrayList<Movie> mMovies;
 
     MovieAdapter(int numberOfItems, GridItemClickListener listener,ArrayList<Movie> m){
@@ -24,6 +24,7 @@ public class MovieAdapter extends  RecyclerView.Adapter<MovieAdapter.MovieViewHo
         gridItemClickListener = listener;
         mMovies = m;
     }
+
 
     @NonNull
     @Override
@@ -54,7 +55,7 @@ public class MovieAdapter extends  RecyclerView.Adapter<MovieAdapter.MovieViewHo
 
     class MovieViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        private ImageView itemView;
+        private final ImageView itemView;
 
         MovieViewHolder(@NonNull View view) {
             super(view);
