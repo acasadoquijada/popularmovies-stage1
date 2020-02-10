@@ -1,8 +1,11 @@
-package com.example.popularmoviesstage1;
+package com.example.popularmoviesstage1.movie;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
+/**
+ * Represents a movie obtained from api.themoviedb.org
+ */
 public class Movie implements Parcelable {
 
     private int popularity;
@@ -21,8 +24,17 @@ public class Movie implements Parcelable {
     private String release_date;
 
 
+    /**
+     * Empty constructor
+     */
     public Movie() {
+
     }
+
+    /**
+     * Constructor that creates a Movie object from a Parcel object
+     * @param in Parcel object needed to recreate a Movie object
+     */
 
     private Movie(Parcel in) {
         popularity = in.readInt();
@@ -40,6 +52,11 @@ public class Movie implements Parcelable {
         overview = in.readString();
         release_date = in.readString();
     }
+
+    /**
+     * Methods needed to implement Parcelable
+     *
+     */
 
     public static final Creator<Movie> CREATOR = new Creator<Movie>() {
         @Override
@@ -161,6 +178,12 @@ public class Movie implements Parcelable {
         return poster_path;
     }
 
+    /**
+     * Sets the correct url to the movie's poster taking into account
+     * the size of the poster
+     * @param poster_path String identificator of the movie's poster
+     */
+
     public void setPoster_path(String poster_path) {
         final String base_url = "https://image.tmdb.org/t/p/";
         final String size = "w185";
@@ -172,6 +195,11 @@ public class Movie implements Parcelable {
         return hashCode();
     }
 
+    /**
+     * To create a Parcel from a Movie object
+     * @param dest Parcel to be written
+     * @param flags flags of the written Parcel
+     */
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(popularity);

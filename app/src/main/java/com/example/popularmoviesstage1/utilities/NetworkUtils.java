@@ -11,7 +11,7 @@ import java.net.URL;
 import java.util.Scanner;
 
 /**
- * These utilities will be used to communicate with the network.
+ * Class used to request movies to http://api.themoviedb.org
  */
 
 
@@ -27,7 +27,11 @@ public class NetworkUtils {
     private static final String KEY = ""; // Your key goes here!!
     private static final String api_key_sort = "api_key";
 
-
+    /**
+     * Creates a URL with the specified sort option
+     * @param sort_option it can be top_rated or popular
+     * @return The URL to fetch the HTTP response from.
+     */
     private static URL buildUrl(String sort_option){
         Uri builtUri = Uri.parse(BASE_URL).buildUpon()
                 .appendPath(sort_option)
@@ -45,12 +49,23 @@ public class NetworkUtils {
 
     }
 
+    /**
+     * Obtain the top rate movies in JSON
+     * @return String object containing the movies in JSON format
+     * @throws IOException Related to network and stream reading
+     */
 
     public static String getTopRateMovies() throws IOException {
         URL topRatedMoviesUrl = buildUrl(top_rated);
         return getResponseFromHttpUrl(topRatedMoviesUrl);
 
     }
+
+    /**
+     * Obtain the popular movies in JSON
+     * @return String object containing the movies in JSON format
+     * @throws IOException Related to network and stream reading
+     */
 
     public static String getPopularMovies() throws IOException {
         URL topRatedMoviesUrl = buildUrl(popular);
@@ -66,10 +81,8 @@ public class NetworkUtils {
      * @throws IOException Related to network and stream reading
      */
 
-
     private static String getResponseFromHttpUrl(URL url) throws IOException {
 
-        Log.d("URL", url.toString());
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         try {
             InputStream in = urlConnection.getInputStream();

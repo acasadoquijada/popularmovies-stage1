@@ -1,7 +1,7 @@
 package com.example.popularmoviesstage1.utilities;
 
 
-import com.example.popularmoviesstage1.Movie;
+import com.example.popularmoviesstage1.movie.Movie;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -9,7 +9,10 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-// I get a String with several movies. I do my job and I create
+/**
+ * Class in charge of creating the movies from JSON
+ */
+
 public class JsonMovieUtils {
 
     private final static String results_token = "results";
@@ -28,15 +31,20 @@ public class JsonMovieUtils {
     private final static String release_date_token = "release_date";
 
 
+    /**
+     * Creates a ArrayList of Movie objects from a String containg the movies in JSON
+     * @param json String containing the movies
+     * @return an ArrayList of Movie objects
+     */
     public static ArrayList<Movie> parseMoviesJsonArray(String json) {
 
         try {
 
             ArrayList<Movie> movies = new ArrayList<>();
 
+            // Obtain a JSONArray with all the movies, iterate and create movies
             JSONObject JSONObjectResultQuery = new JSONObject(json);
             JSONArray JSONArrayMovies = JSONObjectResultQuery.getJSONArray(results_token);
-
 
             for (int i = 0; i < JSONArrayMovies.length(); i++) {
 
@@ -53,7 +61,12 @@ public class JsonMovieUtils {
         }
     }
 
-    static private Movie parseMovie( JSONObject jsonMovie) {
+    /**
+     * Creates a Movie object from a JSONObject
+     * @param jsonMovie JSONObject with the movie
+     * @return a Movie object
+     */
+    static private Movie parseMovie(JSONObject jsonMovie) {
 
         try {
 
