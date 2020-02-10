@@ -1,4 +1,4 @@
-#Popular Movies Stage 1
+# Popular Movies Stage 1
 
 ## General Overview
 
@@ -23,25 +23,14 @@ This applicaction contains the following functiyonaly:
 	
 ## Application class structure
 
-´´´
-java.lang.Object
-   |--- java.awt.Component
-   |       |--- java.awt.Container
-   |               |--- java.awt.Window
-   |                       |--- java.awt.Dialog
-   |                               |--- javax.swing.JDialog
-   |--- java.io.InputStream
-   |       |--- java.io.FileInputStream
-   |--- java.io.OutputStream
-   |       |--- java.io.FileOutputStream
-   |       |--- java.io.FilterOutputStream
-   |               |--- java.io.PrintStream
-   |--- java.util.AbstractCollection
-   |       |--- java.util.AbstractList
-   |               |--- javafx.collections.ObservableListBase
-   |                       |--- javafx.collections.ModifiableObservableListBase
-   |                               |--- com.sun.javafx.collections.ObservableListWrapper
-   |                                       |--- com.sun.javafx.collections.TrackableObservableList
-   |--- jdk.nashorn.internal.runtime.PropertyMap
-   
-   ´´´
+    |-- activities package
+    |   |-- DetailActivity.java
+    |   |-- MainActivity.java
+    |-- movie package
+    |   |-- Movie.java
+    |   |-- MovieAdapter.java
+    |-- utilities package
+    |   |-- JsonMovieUtils.java
+    |   |-- NetworkUtils.java
+    
+TODO: Add an small description of each package/class
