@@ -35,8 +35,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Grid
     private String previousSortOption = "";
     private String currentSortOption = "";
 
-    public static String bundle_token = "token";
-    public static String parcelable_token = "parcelable";
+    public static final String bundle_token = "token";
+    public static final String parcelable_token = "parcelable";
 
 
     /**
@@ -51,6 +51,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Grid
 
         previousSortOption = "";
         currentSortOption = NetworkUtils.popular;
+
+        this.setTitle(getResources().getString(R.string.app_name_sort_popular));
 
         mMovies = new ArrayList<>();
 
@@ -85,11 +87,13 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Grid
         int itemThatWasClickedId = item.getItemId();
 
         if (itemThatWasClickedId == R.id.sort_popularity){
+            this.setTitle(getResources().getString(R.string.app_name_sort_popular));
             new FetchMoviesTask().execute(NetworkUtils.popular);
             return true;
         }
 
         if (itemThatWasClickedId == R.id.sort_rate){
+            this.setTitle(getResources().getString(R.string.app_name_sort_rate));
             new FetchMoviesTask().execute(NetworkUtils.top_rated);
             return true;
         }
@@ -138,7 +142,22 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Grid
 
     class FetchMoviesTask extends AsyncTask<String, Void, ArrayList<Movie> > {
 
-        ProgressDialog mDialog;
+        ProgressDialog progDailog;
+
+
+        /**
+         * Creates and show the ProgressDialog
+         */
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progDailog = new ProgressDialog(MainActivity.this);
+            progDailog.setMessage("Loading movies!!");
+            progDailog.setIndeterminate(false);
+            progDailog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progDailog.setCancelable(true);
+            progDailog.show();
+        }
 
         /**
          * Checks if there is internet connection.
@@ -219,7 +238,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Grid
 
         @Override
         protected void onPostExecute(ArrayList<Movie> movies) {
-
+            progDailog.dismiss();
             if (movies != null) {
 
                 if(!currentSortOption.equals(previousSortOption)){

@@ -10,7 +10,6 @@ import android.widget.TextView;
 import com.example.popularmoviesstage1.movie.Movie;
 import com.example.popularmoviesstage1.R;
 import com.squareup.picasso.Picasso;
-
 /**
  * Activity class that presents the movie details to the user
  *

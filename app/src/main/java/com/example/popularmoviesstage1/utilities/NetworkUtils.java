@@ -1,7 +1,6 @@
 package com.example.popularmoviesstage1.utilities;
 
 import android.net.Uri;
-import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
