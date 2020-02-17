@@ -53,4 +53,4 @@ This applicaction contains the following functionalities:
 
 As mentioned before, you need to register in themoviedb.org to obtain a key for their API in order to use this app.
 
-The key goes in the NetworkUtils.java class of the utilties package line 26. [shortcut](https://github.com/acasadoquijada/popularmovies-stage2/blob/master/app/src/main/java/com/example/popularmoviesstage2/utilities/NetworkUtils.java#L26)
+The key goes in the NetworkUtils.java class of the utilties package line 26. [shortcut](https://github.com/acasadoquijada/popularmovies-stage/blob/master/app/src/main/java/com/example/popularmoviesstage1/utilities/NetworkUtils.java#L26)
