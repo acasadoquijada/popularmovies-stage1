@@ -49,6 +49,10 @@ This applicaction contains the following functionalities:
 * JsonMovieUtils: Parses the movie info obtained from JSON as results of network requets
 * NetWorkUtils: Request movie info to themoviedb.org
    
+## Screenshots
+
+![mainActivityPortrait](doc/images/main_activity.jpg) ![recipeDetailPortrait](doc/images/detail_activity.jpg) 
+   
 ## Add your themoviedb.org API key
 
 As mentioned before, you need to register in themoviedb.org to obtain a key for their API in order to use this app.
