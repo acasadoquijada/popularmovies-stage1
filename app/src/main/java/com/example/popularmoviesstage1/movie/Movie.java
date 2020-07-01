@@ -172,6 +172,5 @@ public class Movie implements Parcelable {
         dest.writeDouble(vote_average);
         dest.writeString(overview);
         dest.writeString(release_date);
-
     }
 }

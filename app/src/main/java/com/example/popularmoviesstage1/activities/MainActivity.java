@@ -1,6 +1,8 @@
 package com.example.popularmoviesstage1.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -8,6 +10,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -16,12 +19,14 @@ import com.example.popularmoviesstage1.movie.MovieAdapter;
 import com.example.popularmoviesstage1.R;
 import com.example.popularmoviesstage1.utilities.JsonMovieUtils;
 import com.example.popularmoviesstage1.utilities.NetworkUtils;
+import com.example.popularmoviesstage1.viewmodel.MovieViewModel;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Main Activity of the Popular Movies Stage 1 application
@@ -30,13 +35,16 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Grid
 
     private MovieAdapter mAdapter;
     private RecyclerView mMovieGrid;
-    private ArrayList<Movie> mMovies;
+    private List<Movie> mMovies;
+
+    private MovieViewModel mViewModel;
 
     private String previousSortOption = "";
     private String currentSortOption = "";
 
     public static final String bundle_token = "token";
     public static final String parcelable_token = "parcelable";
+    public static final String pos_key = "pos";
 
 
     /**
@@ -49,6 +57,16 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Grid
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mViewModel = new ViewModelProvider(this).get(MovieViewModel.class);
+
+        mViewModel.getMovies().observe(this, new Observer<List<Movie>>() {
+            @Override
+            public void onChanged(List<Movie> movies) {
+                Log.d("TESTING__", "IM UPDATED: " + movies.size());
+                mAdapter.setMovies(movies);
+            }
+        });
+
         previousSortOption = "";
         currentSortOption = NetworkUtils.popular;
 
@@ -58,11 +76,15 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Grid
 
         mMovieGrid = findViewById(R.id.MovieRecyclerView);
 
+        mAdapter = new MovieAdapter(this, mMovies);
+
+        mMovieGrid.setAdapter(mAdapter);
+
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
 
         mMovieGrid.setLayoutManager(gridLayoutManager);
 
-        new FetchMoviesTask().execute(currentSortOption);
+        //new FetchMoviesTask().execute(currentSortOption);
 
     }
 
@@ -109,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Grid
      */
     private void initializeAdapter(){
 
-        mAdapter = new MovieAdapter(mMovies.size(),this, mMovies);
+        mAdapter = new MovieAdapter(this, mMovies);
 
         mMovieGrid.setAdapter(mAdapter);
 
@@ -126,7 +148,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Grid
 
         Bundle bundle = new Bundle();
 
-        bundle.putParcelable(parcelable_token, mMovies.get(clickedItemIndex));
+        bundle.putParcelable(parcelable_token, mViewModel.getMovie(clickedItemIndex));
+
+        bundle.putInt(pos_key,clickedItemIndex);
 
         Intent intent = new Intent(MainActivity.this, DetailActivity.class);
 
@@ -140,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Grid
      * AsyncTask that request the movies to the API and initialize the MovieAdapter if needed
      */
 
-    class FetchMoviesTask extends AsyncTask<String, Void, ArrayList<Movie> > {
+    class FetchMoviesTask extends AsyncTask<String, Void, List<Movie> > {
 
         ProgressDialog progDailog;
 
@@ -188,7 +212,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Grid
          */
 
         @Override
-        protected ArrayList<Movie> doInBackground(String... strings) {
+        protected List<Movie> doInBackground(String... strings) {
 
             if (isOnline()) {
 
@@ -237,7 +261,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Grid
          */
 
         @Override
-        protected void onPostExecute(ArrayList<Movie> movies) {
+        protected void onPostExecute(List<Movie> movies) {
             progDailog.dismiss();
             if (movies != null) {
 

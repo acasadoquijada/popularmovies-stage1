@@ -4,12 +4,16 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.popularmoviesstage1.movie.Movie;
 import com.example.popularmoviesstage1.R;
 import com.squareup.picasso.Picasso;
+
+import static com.example.popularmoviesstage1.activities.MainActivity.pos_key;
+
 /**
  * Activity class that presents the movie details to the user
  *
@@ -49,7 +53,12 @@ public class DetailActivity extends AppCompatActivity {
 
             Bundle b = intent.getBundleExtra(MainActivity.bundle_token);
 
+
             if (b != null && b.getParcelable(MainActivity.parcelable_token) != null) {
+
+                int pos = b.getInt(pos_key,0);
+
+                Log.d("TESTING", "POSITION: " + pos);
 
                 movie = b.getParcelable(MainActivity.parcelable_token);
 

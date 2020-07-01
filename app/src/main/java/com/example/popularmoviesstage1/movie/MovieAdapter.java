@@ -1,6 +1,7 @@
 package com.example.popularmoviesstage1.movie;
 
 import android.content.Context;
+import android.content.pm.ModuleInfo;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import com.example.popularmoviesstage1.R;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -22,21 +24,27 @@ import java.util.ArrayList;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder>{
 
-    private final int mNumberOfItems;
     private final GridItemClickListener gridItemClickListener;
-    private ArrayList<Movie> mMovies;
+    private List<Movie> mMovies;
 
     /**
      * Constructor method
-     * @param numberOfItems number of movies
      * @param listener onClickListener
      * @param m ArrayList of movies
      */
 
-    public MovieAdapter(int numberOfItems, GridItemClickListener listener,ArrayList<Movie> m){
-        mNumberOfItems = numberOfItems;
+    public MovieAdapter(GridItemClickListener listener,List<Movie> m){
         gridItemClickListener = listener;
         mMovies = m;
+    }
+
+    public MovieAdapter(GridItemClickListener listener){
+        gridItemClickListener = listener;
+    }
+
+    public void setMovies(List<Movie> movies){
+        mMovies = movies;
+        notifyDataSetChanged();
     }
 
     /**
@@ -79,7 +87,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
     @Override
     public int getItemCount() {
-        return mNumberOfItems;
+        return mMovies.size();
     }
 
 
