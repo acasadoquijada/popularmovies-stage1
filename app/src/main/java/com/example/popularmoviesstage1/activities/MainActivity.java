@@ -1,31 +1,23 @@
 package com.example.popularmoviesstage1.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.popularmoviesstage1.databinding.ActivityMainBinding;
 import com.example.popularmoviesstage1.movie.Movie;
 import com.example.popularmoviesstage1.movie.MovieAdapter;
 import com.example.popularmoviesstage1.R;
-import com.example.popularmoviesstage1.utilities.JsonMovieUtils;
 import com.example.popularmoviesstage1.utilities.NetworkUtils;
 import com.example.popularmoviesstage1.viewmodel.MovieViewModel;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.SocketAddress;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,18 +26,14 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements MovieAdapter.GridItemClickListener {
 
     private MovieAdapter mAdapter;
-    private RecyclerView mMovieGrid;
-    private List<Movie> mMovies;
+
+    private ActivityMainBinding mBinding;
 
     private MovieViewModel mViewModel;
-
-    private String previousSortOption = "";
-    private String currentSortOption = "";
 
     public static final String bundle_token = "token";
     public static final String parcelable_token = "parcelable";
     public static final String pos_key = "pos";
-
 
     /**
      * Creates different objects needed for the MovieAdapter and request the popular movies
@@ -55,38 +43,84 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Grid
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
-        mViewModel = new ViewModelProvider(this).get(MovieViewModel.class);
+        setupDataBinding();
 
-        mViewModel.getMovies().observe(this, new Observer<List<Movie>>() {
-            @Override
-            public void onChanged(List<Movie> movies) {
-                Log.d("TESTING__", "IM UPDATED: " + movies.size());
-                mAdapter.setMovies(movies);
-            }
-        });
+        setupViewModel();
 
-        previousSortOption = "";
-        currentSortOption = NetworkUtils.popular;
+        setActivityTitle(getResources().getString(R.string.app_name_sort_popular));
 
-        this.setTitle(getResources().getString(R.string.app_name_sort_popular));
+        setQuery(NetworkUtils.popular);
 
-        mMovies = new ArrayList<>();
-
-        mMovieGrid = findViewById(R.id.MovieRecyclerView);
-
-        mAdapter = new MovieAdapter(this, mMovies);
-
-        mMovieGrid.setAdapter(mAdapter);
-
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
-
-        mMovieGrid.setLayoutManager(gridLayoutManager);
-
-        //new FetchMoviesTask().execute(currentSortOption);
+        setupRecyclerView();
 
     }
+
+    private void setQuery(String s){
+        mViewModel.setQuery(s);
+    }
+
+    private void setupRecyclerView(){
+        createAdapter();
+        setAdapter();
+        setLayoutManager();
+    }
+
+    private void createAdapter(){
+        mAdapter = new MovieAdapter(this);
+    }
+
+    private void setAdapter(){
+        mBinding.MovieRecyclerView.setAdapter(mAdapter);
+    }
+
+    private void setLayoutManager(){
+        mBinding.MovieRecyclerView.setLayoutManager(createLayoutManager());
+    }
+
+    private GridLayoutManager createLayoutManager(){
+        return new GridLayoutManager(this, 2);
+    }
+
+    private void setupDataBinding(){
+        mBinding = DataBindingUtil.setContentView(this,R.layout.activity_main);
+    }
+
+    private void setActivityTitle(String s){
+        this.setTitle(s);
+    }
+
+    /**
+     * To setup the ViewModel and observe the query and movies to update the adapter
+     */
+
+    private void setupViewModel(){
+        createViewModel();
+        observeQuery();
+        observeMovies();
+    }
+
+    private void createViewModel(){
+        mViewModel = new ViewModelProvider(this).get(MovieViewModel.class);
+    }
+
+    private void observeQuery(){
+        mViewModel.getQuery().observe(this, this::searchMovies);
+    }
+
+    private void searchMovies(String s){
+        mViewModel.searchMovies(s);
+
+    }
+
+    private void observeMovies(){
+        mViewModel.getMovies().observe(this, this::setMovies);
+    }
+
+    private void setMovies(List<Movie> movies){
+        mAdapter.setMovies(movies);
+    }
+
 
     /**
      * Inflates the menu that handles the movie sorting
@@ -109,33 +143,20 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Grid
         int itemThatWasClickedId = item.getItemId();
 
         if (itemThatWasClickedId == R.id.sort_popularity){
-            this.setTitle(getResources().getString(R.string.app_name_sort_popular));
-            new FetchMoviesTask().execute(NetworkUtils.popular);
+            setActivityTitle(getResources().getString(R.string.app_name_sort_popular));
+            setQuery(NetworkUtils.popular);
             return true;
         }
 
         if (itemThatWasClickedId == R.id.sort_rate){
-            this.setTitle(getResources().getString(R.string.app_name_sort_rate));
-            new FetchMoviesTask().execute(NetworkUtils.top_rated);
+            setActivityTitle(getResources().getString(R.string.app_name_sort_rate));
+            setQuery(NetworkUtils.top_rated);
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * Initialize the MovieAdapter object.
-     * Is only called when the movies are sorted in a different way. Example:
-     *
-     * Movies are sorted by popular. If I sort again using popular this method won't be called
-     */
-    private void initializeAdapter(){
-
-        mAdapter = new MovieAdapter(this, mMovies);
-
-        mMovieGrid.setAdapter(mAdapter);
-
-    }
 
     /**
      * Method in charge of creating a DetailActivity to presents the details of the movie
@@ -158,119 +179,5 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Grid
 
         startActivity(intent);
 
-    }
-
-    /**
-     * AsyncTask that request the movies to the API and initialize the MovieAdapter if needed
-     */
-
-    class FetchMoviesTask extends AsyncTask<String, Void, List<Movie> > {
-
-        ProgressDialog progDailog;
-
-
-        /**
-         * Creates and show the ProgressDialog
-         */
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            progDailog = new ProgressDialog(MainActivity.this);
-            progDailog.setMessage("Loading movies!!");
-            progDailog.setIndeterminate(false);
-            progDailog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            progDailog.setCancelable(true);
-            progDailog.show();
-        }
-
-        /**
-         * Checks if there is internet connection.
-         * This method has been obtaion from this StackOverflow post:
-         * https://stackoverflow.com/questions/1560788/how-to-check-internet-access-on-android-inetaddress-never-times-out
-         * @return true if there is internet connection, false otherwise
-         */
-
-        private boolean isOnline() {
-            try {
-                int timeoutMs = 1500;
-                Socket sock = new Socket();
-                SocketAddress sockaddr = new InetSocketAddress("8.8.8.8", 53);
-
-                sock.connect(sockaddr, timeoutMs);
-                sock.close();
-
-                return true;
-            } catch (IOException e) { return false; }
-        }
-
-        /**
-         * Fetch the movie data from the API and returns an ArrayList of Movies
-         *
-         * It uses previousSortOption and currentSortOption to avoid unnecessary calls to the API
-         * @param strings option to sort the movies
-         * @return ArrayList of Movies
-         */
-
-        @Override
-        protected List<Movie> doInBackground(String... strings) {
-
-            if (isOnline()) {
-
-                if (strings.length == 0) {
-                    return null;
-                }
-
-                if (!previousSortOption.equals(strings[0])) {
-
-                    try {
-
-                        currentSortOption = strings[0];
-
-                        String jsonMovies;
-
-                        switch (strings[0]) {
-                            case NetworkUtils.top_rated:
-                                jsonMovies = NetworkUtils.getTopRateMovies();
-                                break;
-                            case NetworkUtils.popular:
-                                jsonMovies = NetworkUtils.getPopularMovies();
-                                break;
-                            default:
-                                jsonMovies = "";
-                                break;
-                        }
-
-                        return JsonMovieUtils.parseMoviesJsonArray(jsonMovies);
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        return null;
-                    }
-
-                }
-
-                return mMovies;
-            }
-            return null;
-        }
-
-        /**
-         * Stores the movies in the mMovies variable from the MainActivity class and initialize
-         * the MovieAdapter if needed. Updates previousSortOption
-         * @param movies ArrayList of Movies
-         */
-
-        @Override
-        protected void onPostExecute(List<Movie> movies) {
-            progDailog.dismiss();
-            if (movies != null) {
-
-                if(!currentSortOption.equals(previousSortOption)){
-                    mMovies = movies;
-                    initializeAdapter();
-                }
-                previousSortOption = currentSortOption;
-            }
-        }
     }
 }

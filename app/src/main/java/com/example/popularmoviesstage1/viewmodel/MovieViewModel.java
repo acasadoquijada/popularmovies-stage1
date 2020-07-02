@@ -11,15 +11,13 @@ import java.util.List;
 
 public class MovieViewModel extends ViewModel {
 
-    private MutableLiveData<List<Movie>> movies;
     private MovieRepository repository;
+    private MutableLiveData<List<Movie>> movies;
+    private MutableLiveData<String> query;
 
     public MovieViewModel(){
-
-        Log.d("TESTING__", "CREATE VIEWMODEL");
-
-
         repository = new MovieRepository();
+        query = new MutableLiveData<>();
     }
 
     public MutableLiveData<List<Movie>> getMovies() {
@@ -28,6 +26,18 @@ public class MovieViewModel extends ViewModel {
             movies = repository.getMovies();
         }
         return movies;
+    }
+
+    public void searchMovies(String s){
+        repository.obtainMovies(s);
+    }
+
+    public MutableLiveData<String> getQuery() {
+        return query;
+    }
+
+    public void setQuery(String query){
+        this.query.setValue(query);
     }
 
     public Movie getMovie(int pos){

@@ -13,22 +13,22 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
-import java.util.ArrayList;
 import java.util.List;
 
 public class MovieRepository {
 
     private MutableLiveData<List<Movie>> movies;
 
-    public MovieRepository(){}
+    public MovieRepository(){
+        movies = new MutableLiveData<>();
+    }
 
     public MutableLiveData<List<Movie>> getMovies() {
-
-        if(movies == null){
-            movies = new MutableLiveData<>();
-            new FetchMoviesTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,NetworkUtils.top_rated);
-        }
         return movies;
+    }
+
+    public void obtainMovies(String s){
+        new FetchMoviesTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, s);
     }
 
     class FetchMoviesTask extends AsyncTask<String, Void, List<Movie>> {
