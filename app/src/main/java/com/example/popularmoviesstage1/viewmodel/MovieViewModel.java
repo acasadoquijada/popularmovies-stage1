@@ -8,6 +8,7 @@ import com.example.popularmoviesstage1.movie.Movie;
 import com.example.popularmoviesstage1.repository.MovieRepository;
 
 import java.util.List;
+import java.util.Objects;
 
 public class MovieViewModel extends ViewModel {
 
@@ -18,13 +19,14 @@ public class MovieViewModel extends ViewModel {
     public MovieViewModel(){
         repository = new MovieRepository();
         query = new MutableLiveData<>();
+        movies = new MutableLiveData<>();
     }
 
     public MutableLiveData<List<Movie>> getMovies() {
-        if(movies == null){
-            movies = new MutableLiveData<>();
+        if(movies.getValue() == null){
             movies = repository.getMovies();
         }
+
         return movies;
     }
 
@@ -41,9 +43,11 @@ public class MovieViewModel extends ViewModel {
     }
 
     public Movie getMovie(int pos){
-        if(movies.getValue().get(pos) != null){
+        
+        if(movies.getValue() != null){
             return movies.getValue().get(pos);
         }
+
         return new Movie();
     }
 }

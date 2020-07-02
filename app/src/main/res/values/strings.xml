@@ -6,4 +6,7 @@
     <string name="movie_poster">movie poster</string>
     <string name="app_name_sort_popular">Popular Movies sorted by popularity</string>
     <string name="app_name_sort_rate">Popular Movies sorted by rate</string>
+
+    <string name="release_date_helper">Release date:</string>
+    <string name="vote_average_help_text">Vote average:</string>
 </resources>
